@@ -21,7 +21,7 @@ class Gauge
   Canvas *canvas;
   bool    visible;
   int     value;
-  int     min, max, step;
+  int     min_value, max_value, step;
   
   virtual void draw(int color) = 0;
 };
@@ -38,7 +38,7 @@ class GaugeRound : public Gauge
  protected:
   int   centerX, centerY;
   int   radius;
-  float minAngle, maxAngle;
+  float min_angle, max_angle;
 
   void draw          (int color);
   void drawScale     (int color);

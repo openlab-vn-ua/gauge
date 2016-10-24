@@ -12,10 +12,10 @@ GaugeRound gauge1(64, 32, 32,
                   -60, 240);
 */
 
-GaugeRound gauge1(64, 32, 32,
+GaugeRound gauge1(64, 31, 32,
                   -10, 10, 2,
                   0,
-                  0, 270);
+                  -60, 240);
                   
 void setup()
 {

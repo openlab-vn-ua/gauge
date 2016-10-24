@@ -28,12 +28,12 @@ void drawCircle(int centerX, int centerY, int radius,
 
 int Gauge::getMinimum()
 {
-  return min;
+  return min_value;
 }
 
 int  Gauge::getMaximum()
 {
-  return max;
+  return max_value;
 }
 
 int  Gauge::getValue()
@@ -43,10 +43,14 @@ int  Gauge::getValue()
 
 void Gauge::setValue(int value)
 {
+  canvas->beginPaint();
+  
   draw(0);
   this->value = value;
-  this->value = constrain(this->value, min, max);
+  this->value = constrain(this->value, min_value, max_value);
   draw(1);
+  
+  canvas->endPaint(); 
 }
 
 bool Gauge::isVisible()
@@ -84,49 +88,49 @@ GaugeRound::GaugeRound(): Gauge()
   centerX = 0;
   centerY = 0;
   radius = 0;
-  min = 0;
-  max = 0;
+  min_value = 0;
+  max_value = 0;
   step = 0;
   value = 0;
-  minAngle = 0;
-  maxAngle = 0;
+  min_angle = 0;
+  max_angle = 0;
 
   visible = true;
 }
 
 GaugeRound::GaugeRound(int   centerX,    int centerY,    int radius,
-                       int   min,        int max,        int step,
-                       int   startValue,
-                       float minAngle,   float maxAngle)
+                       int   min_value,  int max_value,  int step,
+                       int   start_value,
+                       float min_angle,  float max_angle)
 {
   this->centerX = centerX;
   this->centerY = centerY;
   
   this->radius = radius;
   
-  this->min = min;
-  this->max = max;
+  this->min_value = min_value;
+  this->max_value = max_value;
   
   this->step = step;
   
-  this->value = startValue;
+  this->value = start_value;
   
-  this->minAngle = minAngle;
-  this->maxAngle = maxAngle;
+  this->min_angle = min_angle;
+  this->max_angle = max_angle;
 
   visible = true;
 }
 
 void GaugeRound::draw(int color)
 {
-  canvas->beginPaint();
+  //canvas->beginPaint();
   
   OLED *screen = canvas->getScreen();
-  drawCircle(centerX, centerY, radius, minAngle, maxAngle, screen, color);
+  drawCircle(centerX, centerY, radius, min_angle, max_angle, screen, color);
   drawScale(color);
   drawArrowhead(color);
 
-  canvas->endPaint();
+  //canvas->endPaint();
 }
 
 void GaugeRound::drawScale(int color)
@@ -134,9 +138,17 @@ void GaugeRound::drawScale(int color)
   OLED *screen = canvas->getScreen();
   
   int l_radius = radius - 5;
-  
-  int   scale_stick_number = abs(abs(min) + abs(max)) / step;
-  float scale_stick_angle  = abs(abs(minAngle) + abs(maxAngle)) / scale_stick_number;
+
+  int   scale_stick_number = scale_stick_number = abs(abs(min_value) + abs(max_value)) / step;
+  float scale_stick_angle = 0;
+  if(min_angle < 0)
+  {
+    scale_stick_angle  = abs(abs(min_angle) + abs(max_angle)) / scale_stick_number;
+  }
+  else
+  {
+    scale_stick_angle  = abs(abs(min_angle) - abs(max_angle)) / scale_stick_number;
+  }
 
   void (OLED::*drawFunc)(int, int, int, int);
 
@@ -151,7 +163,7 @@ void GaugeRound::drawScale(int color)
 
   for(int i = 0; i <= scale_stick_number; ++i)
   {
-    float angle = (minAngle + scale_stick_angle * i) / 180 * PI;
+    float angle = (min_angle + scale_stick_angle * i) / 180 * PI;
     (screen->*drawFunc)(centerX + radius   * cos(angle),
                         centerY - radius   * sin(angle),
                         centerX + l_radius * cos(angle),
@@ -176,12 +188,10 @@ void GaugeRound::drawArrowhead(int color)
 
   int   b_radius = radius - 10;
   int   l_radius = 10;
-  float angle    = map(value, min, max, maxAngle, minAngle);
+  float angle    = float(map(value, min_value, max_value, max_angle, min_angle)) / 180 * PI;
   
-  //Serial.print("angle="); Serial.println(angle);
-  //Serial.print("value="); Serial.println(value);
-
-  angle = angle / 180 * PI;
+  Serial.print("angle="); Serial.println(angle);
+  Serial.print("value="); Serial.println(value);
 
   (screen->*drawFunc)(centerX + b_radius * cos(angle),
                       centerY - b_radius * sin(angle),
