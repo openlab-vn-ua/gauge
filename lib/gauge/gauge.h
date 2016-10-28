@@ -20,10 +20,11 @@ class Gauge
  protected:
   Canvas *canvas;
   bool    visible;
-  int     value;
+  int     value, last_value;
   int     min_value, max_value;
   
   virtual void draw(int color) = 0;
+  virtual void redraw();
 };
 
 class GaugeRound : public Gauge
@@ -35,19 +36,33 @@ class GaugeRound : public Gauge
              int   start_value,
              float str_angle,  float max_angle);
 
+  void setNumbFontSize(int, int);
+  void getNumbFontSizeX(void);
+  void getNumbFontSizeY(void);
+
+  void setCharFontSize(int, int);
+  void getCharFontSizeX(void);
+  void getCharFontSizeY(void);
+  
   enum Text_Orient{
     horizontal, vertical
   };
   
  protected:
   int   centerX, centerY;
+  int   numb_x, numb_y;
+  int   char_x, char_y;
   int   radius;
-  int   arrowhead_begin_at_center, gauge_division_length, gauge_scale_step,
+  int   arrowhead_r_begin_at_center, gauge_division_length, gauge_scale_step,
         space_btwn_arrw_divisn;
   float str_angle, end_angle;
   char  suffix;
+  int   numb_font_size_x, numb_font_size_y;
+  int   char_font_size_x, char_font_size_y;
   Text_Orient txt_or_abt_gauge;
 
+  void calculateTextPositions();
+  
   void draw          (int color);
   void drawScale     (int color);
   void drawArrowhead (int color);
